@@ -12,6 +12,8 @@
 
 **FastGrid** provides pure math pipelines for computing Grid, Masonry, and Gallery layouts. It operates entirely on `float[]` arrays to achieve **true zero-allocation** during layout passes, completely eliminating Garbage Collection stutter during high-FPS animations and window resizing.
 
+![FastGrid Showcase](docs/screenshot.png)
+
 ---
 
 ## Zero-Allocation Architecture
