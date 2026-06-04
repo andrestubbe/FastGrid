@@ -1,63 +1,55 @@
 package fastgrid;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 public final class MasonryLayout implements LayoutAlgorithm {
 
-    private static final class Column {
-        int index;
-        float height;
-
-        Column(int index, float height) {
-            this.index = index;
-            this.height = height;
-        }
-    }
-
     @Override
     public LayoutMeasure measure(List<Cell> cells, LayoutContext ctx) {
-        int cols = Math.round(ctx.columns());
+        int cols = Math.max(1, Math.round(ctx.columns()));
         float gap = ctx.gap();
-        float colW = ctx.columnWidth();
+        
+        float usable = Math.max(1f, ctx.width() - gap * (cols + 1f));
+        float colW = Math.max(ctx.minSize(), usable / cols);
 
-        PriorityQueue<Column> pq = new PriorityQueue<>(Comparator.comparing(c -> c.height));
-        for (int i = 0; i < cols; i++) pq.add(new Column(i, gap));
+        // Plain float array — linear min search is faster than PriorityQueue for typical col counts
+        float[] heights = new float[cols];
+        Arrays.fill(heights, gap);
 
         for (Cell c : cells) {
-            Column col = pq.poll();
+            int col = LayoutMath.minIndex(heights);
             float h = LayoutMath.heightFor(c, colW, ctx.minSize());
-            col.height += h + gap;
-            pq.add(col);
+            heights[col] += h + gap;
         }
 
         float max = 0f;
-        for (Column c : pq) max = Math.max(max, c.height);
-
+        for (float h : heights) max = Math.max(max, h);
         return new LayoutMeasure(max + gap);
     }
 
     @Override
     public List<Rect> arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m) {
-        int cols = Math.round(ctx.columns());
+        int cols = Math.max(1, Math.round(ctx.columns()));
         float gap = ctx.gap();
-        float colW = ctx.columnWidth();
+        
+        float usable = Math.max(1f, ctx.width() - gap * (cols + 1f));
+        float colW = Math.max(ctx.minSize(), usable / cols);
 
         float[] heights = new float[cols];
         Arrays.fill(heights, gap);
 
-        List<Rect> out = new ArrayList<>(cells.size());
-
-        for (Cell c : cells) {
+        Rect[] out = new Rect[cells.size()];
+        for (int i = 0; i < cells.size(); i++) {
+            Cell c = cells.get(i);
             int col = LayoutMath.minIndex(heights);
             float h = LayoutMath.heightFor(c, colW, ctx.minSize());
-
             float x = gap + col * (colW + gap);
             float y = heights[col];
-
-            out.add(new Rect(x, y, colW, h));
+            out[i] = new Rect(x, y, colW, h);
             heights[col] += h + gap;
         }
 
-        return out;
+        return Arrays.asList(out);
     }
 }

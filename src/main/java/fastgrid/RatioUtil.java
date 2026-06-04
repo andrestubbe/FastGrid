@@ -1,32 +1,32 @@
 package fastgrid;
 
-import java.awt.geom.Rectangle2D;
+public final class RatioUtil {
 
-public class RatioUtil {
+    /**
+     * Fit-letterbox: berechnet inner (aspect-correct) in outer.
+     * Nutzt c.aspect (vorkalkuliert) statt rw/rh per Frame zu rechnen.
+     */
+    public static void fit(Rect outer, Rect inner, float aspect) {
 
-    public static void fit(Rectangle2D.Float outer, Rectangle2D.Float inner, float rw, float rh) {
-
-        if (outer.width <= 0 || outer.height <= 0) {
-            inner.setRect(outer);
+        if (outer.w <= 0 || outer.h <= 0) {
+            inner.set(outer);
             return;
         }
 
-        float target = rw / rh;
-        float outerRatio = outer.width / outer.height;
+        float outerRatio = outer.w / outer.h;
 
         float w, h;
-
-        if (outerRatio > target) {
-            h = outer.height;
-            w = h * target;
+        if (outerRatio > aspect) {
+            h = outer.h;
+            w = h * aspect;
         } else {
-            w = outer.width;
-            h = w / target;
+            w = outer.w;
+            h = w / aspect;
         }
 
-        float x = outer.x + (outer.width - w) * 0.5f;
-        float y = outer.y + (outer.height - h) * 0.5f;
-
-        inner.setRect(x, y, w, h);
+        inner.x = outer.x + (outer.w - w) * 0.5f;
+        inner.y = outer.y + (outer.h - h) * 0.5f;
+        inner.w = w;
+        inner.h = h;
     }
 }

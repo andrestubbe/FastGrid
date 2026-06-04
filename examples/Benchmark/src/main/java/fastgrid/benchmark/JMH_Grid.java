@@ -1,8 +1,10 @@
 package fastgrid.benchmark;
 
-import fastgrid.FastGridEngine;
+import fastgrid.*;
 import org.openjdk.jmh.annotations.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -14,62 +16,53 @@ import java.util.concurrent.TimeUnit;
 @Fork(1)
 public class JMH_Grid {
 
-    private static final int ITEM_COUNT = 100;
-    private static final int COLUMNS = 4;
-    private static final float CONTAINER_WIDTH = 1920f;
-    private static final float GAP = 10f;
-    private static final float TARGET_ROW_HEIGHT = 300f;
+    private static final int   ITEM_COUNT        = 500;
+    private static final int   COLUMNS           = 5;
+    private static final float CONTAINER_WIDTH   = 1920f;
+    private static final float GAP               = 10f;
+    private static final float MIN_SIZE          = 24f;
 
-    private float[] itemAspectRatios;
-    private float[] outBounds;
-    private float[] scratchColumnHeights;
+    private List<Cell> cells;
+    private LayoutAlgorithm gridAlgo;
+    private LayoutAlgorithm masonryAlgo;
+    private LayoutAlgorithm galleryAlgo;
 
     @Setup(Level.Trial)
     public void setup() {
-        itemAspectRatios = new float[ITEM_COUNT];
-        outBounds = new float[ITEM_COUNT * 4];
-        scratchColumnHeights = new float[COLUMNS];
+        float[][] RATIOS = {
+                {1, 1}, {4, 3}, {3, 4}, {16, 9}, {9, 16}, {3, 2}, {2, 3}
+        };
 
         Random rand = new Random(42);
+        cells = new ArrayList<>(ITEM_COUNT);
         for (int i = 0; i < ITEM_COUNT; i++) {
-            // Random aspect ratios between 0.5 (portrait) and 2.0 (landscape)
-            itemAspectRatios[i] = 0.5f + rand.nextFloat() * 1.5f;
+            float[] r = RATIOS[rand.nextInt(RATIOS.length)];
+            cells.add(new Cell(r[0], r[1]));
         }
+
+        gridAlgo    = new GridLayout();
+        masonryAlgo = new MasonryLayout();
+        galleryAlgo = new GalleryLayout();
     }
 
     @Benchmark
-    public float computeGridLayout() {
-        return FastGridEngine.computeGridLayout(
-                ITEM_COUNT,
-                CONTAINER_WIDTH,
-                COLUMNS,
-                GAP,
-                outBounds
-        );
+    public List<Rect> computeGridLayout() {
+        LayoutContext ctx = LayoutContext.of(CONTAINER_WIDTH, GAP, MIN_SIZE, COLUMNS);
+        LayoutMeasure m   = gridAlgo.measure(cells, ctx);
+        return gridAlgo.arrange(cells, ctx, m);
     }
 
     @Benchmark
-    public float computeMasonryLayout() {
-        return FastGridEngine.computeMasonryLayout(
-                ITEM_COUNT,
-                CONTAINER_WIDTH,
-                COLUMNS,
-                GAP,
-                itemAspectRatios,
-                scratchColumnHeights,
-                outBounds
-        );
+    public List<Rect> computeMasonryLayout() {
+        LayoutContext ctx = LayoutContext.of(CONTAINER_WIDTH, GAP, MIN_SIZE, COLUMNS);
+        LayoutMeasure m   = masonryAlgo.measure(cells, ctx);
+        return masonryAlgo.arrange(cells, ctx, m);
     }
 
     @Benchmark
-    public float computeGalleryLayout() {
-        return FastGridEngine.computeGalleryLayout(
-                ITEM_COUNT,
-                CONTAINER_WIDTH,
-                TARGET_ROW_HEIGHT,
-                GAP,
-                itemAspectRatios,
-                outBounds
-        );
+    public List<Rect> computeGalleryLayout() {
+        LayoutContext ctx = LayoutContext.of(CONTAINER_WIDTH, GAP, MIN_SIZE, COLUMNS);
+        LayoutMeasure m   = galleryAlgo.measure(cells, ctx);
+        return galleryAlgo.arrange(cells, ctx, m);
     }
 }

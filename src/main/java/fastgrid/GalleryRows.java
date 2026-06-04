@@ -4,6 +4,8 @@ import java.util.List;
 
 public final class GalleryRows {
 
+    public record Row(int start, int count, float rowH, float scale) {}
+
     public static Row packRow(
             List<Cell> cells,
             int start,
@@ -32,13 +34,12 @@ public final class GalleryRows {
         if (count == 0) {
             count = 1;
             rowSum = LayoutMath.widthFor(cells.get(start), targetHeight, minSize);
-            i = start + 1;
         }
 
-        float gaps = gap * (count + 1);
+        float gaps         = gap * (count + 1);
         float targetContent = width - gaps;
-        float scale = targetContent / rowSum;
-        float rowH = targetHeight * scale;
+        float scale        = targetContent / rowSum;
+        float rowH         = targetHeight * scale;
 
         return new Row(start, count, rowH, scale);
     }

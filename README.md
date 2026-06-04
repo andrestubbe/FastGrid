@@ -11,8 +11,9 @@
 **⚡ High-performance multi-item layout engine for the FastJava ecosystem.**
 
 **FastGrid** provides pure math pipelines for computing Grid, Masonry, and Gallery layouts. It operates entirely on `float[]` arrays to achieve **true zero-allocation** during layout passes, completely eliminating Garbage Collection stutter during high-FPS animations and window resizing.
+[**Watch the Demo**](https://youtu.be/mk-N_5ywSCU)
 
-![FastGrid Showcase](docs/screenshot.png)
+[![FastGrid Showcase](docs/screenshot.png)](https://youtu.be/mk-N_5ywSCU)
 
 ---
 

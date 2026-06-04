@@ -1,49 +1,20 @@
 package fastgrid;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class GalleryLayout implements LayoutAlgorithm {
+public final class GalleryLayout implements LayoutAlgorithm {
 
     @Override
     public LayoutMeasure measure(List<Cell> cells, LayoutContext ctx) {
-        float targetH = ctx.columnWidth(); // oder ctx.minSize(), je nach Geschmack
-
+        float targetH = ctx.columnWidth();
         float y = ctx.gap();
         int index = 0;
         int n = cells.size();
 
         while (index < n) {
-
-            float rowSum = 0f;
-            int count = 0;
-
-            while (index < n) {
-                Cell c = cells.get(index);
-                float w = targetH * (c.ratioW / c.ratioH);
-                float next = rowSum + w;
-                float gaps = ctx.gap() * (count + 2);
-
-                if (count > 0 && next + gaps > ctx.width())
-                    break;
-
-                rowSum = next;
-                count++;
-                index++;
-            }
-
-            if (count == 0) {
-                count = 1;
-                Cell c = cells.get(index++);
-                rowSum = targetH * (c.ratioW / c.ratioH);
-            }
-
-            float gaps = ctx.gap() * (count + 1);
-            float targetContent = ctx.width() - gaps;
-            float scale = targetContent / rowSum;
-
-            float rowH = targetH * scale;
-            y += rowH + ctx.gap();
+            GalleryRows.Row row = GalleryRows.packRow(cells, index, targetH, ctx.gap(), ctx.width(), ctx.minSize());
+            y += row.rowH() + ctx.gap();
+            index += row.count();
         }
 
         return new LayoutMeasure(y);
@@ -52,57 +23,38 @@ public class GalleryLayout implements LayoutAlgorithm {
     @Override
     public List<Rect> arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m) {
         float targetH = ctx.columnWidth();
+        float gap = ctx.gap();
 
-        List<Rect> out = new ArrayList<>();
-        float y = ctx.gap();
+        Rect[] out = new Rect[cells.size()];
+        float y = gap;
         int index = 0;
         int n = cells.size();
 
         while (index < n) {
-
-            float rowSum = 0f;
+            GalleryRows.Row row = GalleryRows.packRow(cells, index, targetH, gap, ctx.width(), ctx.minSize());
             int rowStart = index;
-            int count = 0;
+            int count = row.count();
+            float rowH = row.rowH();
+            float scale = row.scale();
 
-            while (index < n) {
-                Cell c = cells.get(index);
-                float w = targetH * (c.ratioW / c.ratioH);
-                float next = rowSum + w;
-                float gaps = ctx.gap() * (count + 2);
-
-                if (count > 0 && next + gaps > ctx.width())
-                    break;
-
-                rowSum = next;
-                count++;
-                index++;
-            }
-
-            if (count == 0) {
-                count = 1;
-                Cell c = cells.get(index++);
-                rowSum = targetH * (c.ratioW / c.ratioH);
-            }
-
-            float gaps = ctx.gap() * (count + 1);
-            float targetContent = ctx.width() - gaps;
-            float scale = targetContent / rowSum;
-
-            float rowH = targetH * scale;
-            float x = ctx.gap();
+            // Last row: do NOT justify — left-align it
+            boolean isLastRow = (index + count >= n);
+            float x = gap;
 
             for (int i = 0; i < count; i++) {
                 Cell c = cells.get(rowStart + i);
-                float baseW = targetH * (c.ratioW / c.ratioH);
-                float w = baseW * scale;
+                float baseW = LayoutMath.widthFor(c, targetH, ctx.minSize());
+                float w = isLastRow ? baseW : baseW * scale;
 
-                out.add(new Rect(x, y, w, rowH));
-                x += w + ctx.gap();
+                out[rowStart + i] = new Rect(x, y, w, isLastRow ? targetH : rowH);
+                x += w + gap;
             }
 
-            y += rowH + ctx.gap();
+            y += rowH + gap;
+            index += count;
         }
 
-        return out;
+        // Convert to list (already allocated once via array)
+        return java.util.Arrays.asList(out);
     }
 }
