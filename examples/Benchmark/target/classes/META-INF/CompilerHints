@@ -3,6 +3,7 @@ dontinline,*.*_avgt_jmhStub
 dontinline,*.*_sample_jmhStub
 dontinline,*.*_ss_jmhStub
 dontinline,*.*_thrpt_jmhStub
-inline,fastproportion/benchmark/JMH_Proportion.computeContainZeroAllocation
-inline,fastproportion/benchmark/JMH_Proportion.computeCoverZeroAllocation
-inline,fastproportion/benchmark/JMH_Proportion.setup
+inline,fastgrid/benchmark/JMH_Grid.computeGalleryLayout
+inline,fastgrid/benchmark/JMH_Grid.computeGridLayout
+inline,fastgrid/benchmark/JMH_Grid.computeMasonryLayout
+inline,fastgrid/benchmark/JMH_Grid.setup
