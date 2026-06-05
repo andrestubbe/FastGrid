@@ -45,7 +45,17 @@ public class LayoutController {
     }
 
     public void invalidate() {
-        initialized = false;
+        if (cells.isEmpty() || sourceBounds == null || sourceBounds.length != cells.size()) {
+            initialized = false;
+        } else {
+            // Arrays are the right size, just recompute target and snap current
+            compute(currentAlgo, targetBounds);
+            for (int i = 0; i < targetBounds.length; i++) {
+                sourceBounds[i].set(targetBounds[i]);
+                currentBounds[i].set(targetBounds[i]);
+            }
+            layoutT = 1f;
+        }
     }
 
     public Dimension getPreferredSize() {
@@ -69,11 +79,7 @@ public class LayoutController {
             case GALLERY -> galleryAlgo;
         };
 
-        List<Rect> newTarget = compute(currentAlgo);
-        for (int i = 0; i < targetBounds.length; i++) {
-            targetBounds[i].set(newTarget.get(i));
-        }
-
+        compute(currentAlgo, targetBounds);
         layoutT = 0f;
     }
 
@@ -86,7 +92,7 @@ public class LayoutController {
 
     private LayoutContext createContext() {
         float width   = panel.getWidth() > 0 ? panel.getWidth() : 700;
-        float gap     = Math.max(2f, panel.baseGap * panel.gapScale);
+        float gap     = Math.max(0f, panel.baseGap * panel.gapScale);
         float minSize = 24f;
         float cols    = panel.columns;
         return LayoutContext.of(width, gap, minSize, cols);
@@ -100,11 +106,10 @@ public class LayoutController {
         targetBounds  = allocRects(n);
         currentBounds = allocRects(n);
 
-        List<Rect> initRects = compute(currentAlgo);
+        compute(currentAlgo, targetBounds);
         for (int i = 0; i < n; i++) {
-            sourceBounds[i].set(initRects.get(i));
-            targetBounds[i].set(initRects.get(i));
-            currentBounds[i].set(initRects.get(i));
+            sourceBounds[i].set(targetBounds[i]);
+            currentBounds[i].set(targetBounds[i]);
         }
 
         layoutT = 1f;
@@ -118,10 +123,10 @@ public class LayoutController {
         }
     }
 
-    private List<Rect> compute(LayoutAlgorithm algo) {
+    private void compute(LayoutAlgorithm algo, Rect[] out) {
         LayoutContext ctx = createContext();
         LayoutMeasure m   = algo.measure(cells, ctx);
-        return algo.arrange(cells, ctx, m);
+        algo.arrange(cells, ctx, m, out);
     }
 
     private static Rect[] allocRects(int n) {

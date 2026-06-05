@@ -2,6 +2,7 @@ package fastgrid.demo;
 
 import fastgrid.Cell;
 import fastgrid.Rect;
+import fastproportion.ProportionMode;
 import fastui.component.Component;
 
 import javax.imageio.ImageIO;
@@ -19,6 +20,16 @@ public class FastGridView extends Component {
     public float gapScale      = 1f;
     public final float baseGap  = 10f;
     public float scrollY        = 0f;
+    
+    public ProportionMode targetProportionMode = ProportionMode.CONTAIN;
+    public ProportionMode proportionMode = ProportionMode.CONTAIN;
+    public float proportionT = 1f;
+
+    public void setProportionMode(ProportionMode mode) {
+        if (this.targetProportionMode == mode) return;
+        this.targetProportionMode = mode;
+        anim.animateProportion();
+    }
 
     // Loading callback: (loaded, total)
     public java.util.function.BiConsumer<Integer, Integer> onProgress;
@@ -72,7 +83,7 @@ public class FastGridView extends Component {
                             // Convert to hardware-accelerated VRAM compatible image
                             GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
                                     .getDefaultScreenDevice().getDefaultConfiguration();
-                            BufferedImage img = gc.createCompatibleImage(tw, th, Transparency.TRANSLUCENT);
+                            BufferedImage img = gc.createCompatibleImage(tw, th, Transparency.OPAQUE);
                             Graphics2D g = img.createGraphics();
                             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                             g.drawImage(raw, 0, 0, tw, th, null);
@@ -81,7 +92,7 @@ public class FastGridView extends Component {
                             Cell cell = new Cell(rw, rh);
                             cell.index = index++;
 
-                            CellComponent comp = new CellComponent(cell);
+                            CellComponent comp = new CellComponent(FastGridView.this, cell);
                             comp.image = img;
 
                             newCells.add(cell);
@@ -94,17 +105,15 @@ public class FastGridView extends Component {
                                 EventQueue.invokeLater(() -> onProgress.accept(loadedCount, totalCount));
                             }
 
-                            // Progressive load: update UI every 5 images
-                            if (newCells.size() % 5 == 0) {
-                                List<Cell> batchCells = new ArrayList<>(newCells);
-                                List<CellComponent> batchComps = new ArrayList<>(newComponents);
-                                EventQueue.invokeLater(() -> {
-                                    if (this.children != null) this.children.clear();
-                                    for (CellComponent c : batchComps) this.add(c);
-                                    layout.setCells(batchCells);
-                                    repaint();
-                                });
-                            }
+                            // Progressive load: update UI every image
+                            List<Cell> batchCells = new ArrayList<>(newCells);
+                            List<CellComponent> batchComps = new ArrayList<>(newComponents);
+                            EventQueue.invokeLater(() -> {
+                                if (this.children != null) this.children.clear();
+                                for (CellComponent c : batchComps) this.add(c);
+                                layout.setCells(batchCells);
+                                repaint();
+                            });
                         }
                     } catch (IOException ignored) {}
                 }
@@ -161,6 +170,19 @@ public class FastGridView extends Component {
     private long lastFpsTime = 0;
     private int frames = 0;
     private int currentFps = 0;
+
+    @Override
+    public void render(Graphics2D g) {
+        this.onRender(g);
+        if (this.children != null) {
+            float viewHeight = root != null ? root.getHeight() : 2000f;
+            for (Component child : this.children) {
+                if (child.getY() + child.getHeight() >= 0 && child.getY() <= viewHeight) {
+                    child.render(g);
+                }
+            }
+        }
+    }
 
     @Override
     public void onRender(Graphics2D g) {

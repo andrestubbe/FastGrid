@@ -21,11 +21,10 @@ public final class GalleryLayout implements LayoutAlgorithm {
     }
 
     @Override
-    public List<Rect> arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m) {
+    public void arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m, Rect[] out) {
         float targetH = ctx.columnWidth();
         float gap = ctx.gap();
 
-        Rect[] out = new Rect[cells.size()];
         float y = gap;
         int index = 0;
         int n = cells.size();
@@ -46,15 +45,12 @@ public final class GalleryLayout implements LayoutAlgorithm {
                 float baseW = LayoutMath.widthFor(c, targetH, ctx.minSize());
                 float w = isLastRow ? baseW : baseW * scale;
 
-                out[rowStart + i] = new Rect(x, y, w, isLastRow ? targetH : rowH);
+                out[rowStart + i].set(x, y, w, isLastRow ? targetH : rowH);
                 x += w + gap;
             }
 
             y += rowH + gap;
             index += count;
         }
-
-        // Convert to list (already allocated once via array)
-        return java.util.Arrays.asList(out);
     }
 }

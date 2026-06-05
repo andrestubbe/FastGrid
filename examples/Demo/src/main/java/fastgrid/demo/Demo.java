@@ -3,6 +3,7 @@ package fastgrid.demo;
 import fasttheme.FastTheme;
 import fastui.Container;
 import fastgrid.LayoutMode;
+import fastproportion.ProportionMode;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,18 +63,54 @@ public class Demo {
         InputMap  im = root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = root.getActionMap();
 
-        im.put(KeyStroke.getKeyStroke("1"), "grid");
-        im.put(KeyStroke.getKeyStroke("2"), "masonry");
-        im.put(KeyStroke.getKeyStroke("3"), "gallery");
+        im.put(KeyStroke.getKeyStroke("1"), "grid-contain");
+        im.put(KeyStroke.getKeyStroke("2"), "grid-cover");
+        im.put(KeyStroke.getKeyStroke("3"), "grid-fith");
+        im.put(KeyStroke.getKeyStroke("4"), "grid-fitv");
+        im.put(KeyStroke.getKeyStroke("5"), "masonry");
+        im.put(KeyStroke.getKeyStroke("6"), "gallery");
 
-        am.put("grid",    new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { view.anim.animateLayout(LayoutMode.GRID); }
+        am.put("grid-contain", new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) { 
+                view.setProportionMode(ProportionMode.CONTAIN);
+                view.anim.animateLayout(LayoutMode.GRID); 
+                view.repaint();
+            }
+        });
+        am.put("grid-cover", new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) { 
+                view.setProportionMode(ProportionMode.COVER);
+                view.anim.animateLayout(LayoutMode.GRID); 
+                view.repaint();
+            }
+        });
+        am.put("grid-fith", new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) { 
+                view.setProportionMode(ProportionMode.FIT_HORIZONTAL);
+                view.anim.animateLayout(LayoutMode.GRID); 
+                view.repaint();
+            }
+        });
+        am.put("grid-fitv", new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) { 
+                view.setProportionMode(ProportionMode.FIT_VERTICAL);
+                view.anim.animateLayout(LayoutMode.GRID); 
+                view.repaint();
+            }
         });
         am.put("masonry", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { view.anim.animateLayout(LayoutMode.MASONRY); }
+            @Override public void actionPerformed(ActionEvent e) { 
+                view.setProportionMode(ProportionMode.FIT_HORIZONTAL); // Masonry inherently uses FIT_HORIZONTAL
+                view.anim.animateLayout(LayoutMode.MASONRY); 
+                view.repaint();
+            }
         });
         am.put("gallery", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { view.anim.animateLayout(LayoutMode.GALLERY); }
+            @Override public void actionPerformed(ActionEvent e) { 
+                view.setProportionMode(ProportionMode.FIT_VERTICAL); // Gallery inherently uses FIT_VERTICAL
+                view.anim.animateLayout(LayoutMode.GALLERY); 
+                view.repaint();
+            }
         });
 
         // ── Mouse (scroll, zoom, gap) ────────────────────────────

@@ -6,5 +6,5 @@ public interface LayoutAlgorithm {
 
     LayoutMeasure measure(List<Cell> cells, LayoutContext ctx);
 
-    List<Rect> arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure measure);
+    void arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure measure, Rect[] out);
 }

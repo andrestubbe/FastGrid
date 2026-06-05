@@ -18,7 +18,7 @@ public final class GridLayout implements LayoutAlgorithm {
     }
 
     @Override
-    public List<Rect> arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m) {
+    public void arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m, Rect[] out) {
         int cols = Math.max(1, Math.round(ctx.columns()));
         float gap = ctx.gap();
         float width = ctx.width();
@@ -26,19 +26,16 @@ public final class GridLayout implements LayoutAlgorithm {
         float usable = Math.max(1f, width - gap * (cols + 1f));
         float size = Math.max(ctx.minSize(), usable / cols);
 
-        Rect[] out = new Rect[cells.size()];
         float x = gap;
         float y = gap;
 
         for (int i = 0; i < cells.size(); i++) {
-            out[i] = new Rect(x, y, size, size);
+            out[i].set(x, y, size, size);
             x += size + gap;
             if (x + size > width + 0.5f) {
                 x = gap;
                 y += size + gap;
             }
         }
-
-        return Arrays.asList(out);
     }
 }

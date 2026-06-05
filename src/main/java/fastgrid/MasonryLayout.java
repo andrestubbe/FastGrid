@@ -29,7 +29,7 @@ public final class MasonryLayout implements LayoutAlgorithm {
     }
 
     @Override
-    public List<Rect> arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m) {
+    public void arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m, Rect[] out) {
         int cols = Math.max(1, Math.round(ctx.columns()));
         float gap = ctx.gap();
         
@@ -39,17 +39,14 @@ public final class MasonryLayout implements LayoutAlgorithm {
         float[] heights = new float[cols];
         Arrays.fill(heights, gap);
 
-        Rect[] out = new Rect[cells.size()];
         for (int i = 0; i < cells.size(); i++) {
             Cell c = cells.get(i);
             int col = LayoutMath.minIndex(heights);
             float h = LayoutMath.heightFor(c, colW, ctx.minSize());
             float x = gap + col * (colW + gap);
             float y = heights[col];
-            out[i] = new Rect(x, y, colW, h);
+            out[i].set(x, y, colW, h);
             heights[col] += h + gap;
         }
-
-        return Arrays.asList(out);
     }
 }

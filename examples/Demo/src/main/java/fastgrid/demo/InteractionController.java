@@ -93,8 +93,8 @@ public class InteractionController {
                 // ALT = GAP SCALING
                 if (e.isAltDown()) {
                     isGapScaling = true;
-                    panel.gapScale += dx * 0.01f;
-                    panel.gapScale = Math.max(0.1f, Math.min(5f, panel.gapScale));
+                    panel.gapScale -= dx * 0.01f;
+                    panel.gapScale = Math.max(0f, Math.min(5f, panel.gapScale));
                     layout.invalidate();
                     panel.repaint();
                     return;
@@ -103,7 +103,7 @@ public class InteractionController {
                 // SHIFT = COLUMN SCALING
                 if (e.isShiftDown()) {
                     isColumnScaling = true;
-                    panel.columns -= dx * 0.02f;
+                    panel.columns += dx * 0.02f;
                     panel.columns = Math.max(2f, Math.min(40f, panel.columns));
                     panel.targetColumns = panel.columns;
                     layout.invalidate();

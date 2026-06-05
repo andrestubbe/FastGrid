@@ -26,6 +26,9 @@ public final class FastLayoutEngine {
     ) {
         LayoutContext ctx = LayoutContext.of(width, gap, minSize, columns);
         LayoutMeasure m = algo.measure(cells, ctx);
-        return algo.arrange(cells, ctx, m);
+        Rect[] out = new Rect[cells.size()];
+        for (int i = 0; i < out.length; i++) out[i] = new Rect();
+        algo.arrange(cells, ctx, m, out);
+        return java.util.Arrays.asList(out);
     }
 }

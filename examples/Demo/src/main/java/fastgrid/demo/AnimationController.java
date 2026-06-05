@@ -28,7 +28,8 @@ public class AnimationController {
         // setMode snapshots current visual state and resets t=0 internally
         layout.setMode(target);
 
-        Tween tween = FastTween.to(0f, 1f, 350)
+        Tween tween = FastTween.to(0f, 1f, 400)
+                .ease(fasttween.Ease.CUBIC_OUT)
                 .onUpdate(val -> {
                     layout.setLayoutT(val);
                     panel.repaint();
@@ -50,7 +51,8 @@ public class AnimationController {
             columnAnim.stop();
         }
 
-        Tween tween = FastTween.to(start, end, 260)
+        Tween tween = FastTween.to(start, end, 300)
+                .ease(fasttween.Ease.CUBIC_OUT)
                 .onUpdate(val -> {
                     panel.columns = val;
                     panel.targetColumns = val;
@@ -65,5 +67,27 @@ public class AnimationController {
                 });
 
         columnAnim = FastAnimation.sequence(tween).start();
+    }
+
+    private Animation proportionAnim;
+
+    public void animateProportion() {
+        if (proportionAnim != null && proportionAnim.isRunning()) {
+            proportionAnim.stop();
+        }
+
+        Tween tween = FastTween.to(0f, 1f, 400)
+                .ease(fasttween.Ease.CUBIC_OUT)
+                .onUpdate(val -> {
+                    panel.proportionT = val;
+                    panel.repaint();
+                })
+                .onComplete(() -> {
+                    panel.proportionT = 1f;
+                    panel.proportionMode = panel.targetProportionMode;
+                    panel.repaint();
+                });
+
+        proportionAnim = FastAnimation.sequence(tween).start();
     }
 }
