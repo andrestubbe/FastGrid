@@ -43,7 +43,7 @@ public class Demo {
                                  
         int[] stats = new int[]{0, 0, 0}; // loaded, total, fps
         Runnable updateTitle = () -> {
-            frame.setTitle(String.format("FastGrid + FastUI [%d/%d] - %d FPS", stats[0], stats[1], stats[2]));
+            frame.setTitle(String.format("FastGrid + FastUI [%d/%d] - %d FPS | Press 1, 2, 3, 4, 5, 6, 7 / use Alt+Wheel", stats[0], stats[1], stats[2]));
         };
                                  
         view.onProgress = (loaded, total) -> {

@@ -7,7 +7,7 @@ echo.
 echo 🚀 Launching: Visual Demo...
 
 cd examples\Demo
-call mvn compile exec:java -Dexec.mainClass="fastgrid.demo.Demo"
+call mvn -q compile exec:java -Dexec.mainClass="fastgrid.demo.Demo"
 if %errorlevel% neq 0 (
     echo ❌ [ERROR] Demo failed to launch. 
     echo    Make sure you have all FastJava dependencies installed.

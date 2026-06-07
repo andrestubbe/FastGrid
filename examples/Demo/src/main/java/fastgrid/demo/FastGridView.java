@@ -46,6 +46,15 @@ public class FastGridView extends Component {
         this.layout = new LayoutController(this);
         this.anim   = new AnimationController(this, layout);
         this.input  = new InteractionController(this, layout, anim);
+
+        fpsTimer = new javax.swing.Timer(1000, e -> {
+            currentFps = frames;
+            frames = 0;
+            if (onFpsUpdate != null) {
+                onFpsUpdate.accept(currentFps);
+            }
+        });
+        fpsTimer.start();
     }
 
     /**
@@ -109,10 +118,16 @@ public class FastGridView extends Component {
                             List<Cell> batchCells = new ArrayList<>(newCells);
                             List<CellComponent> batchComps = new ArrayList<>(newComponents);
                             EventQueue.invokeLater(() -> {
-                                if (this.children != null) this.children.clear();
-                                for (CellComponent c : batchComps) this.add(c);
-                                layout.setCells(batchCells);
-                                repaint();
+                                float contentHeight = (float) layout.getPreferredSize().getHeight();
+                                float viewHeight = root != null ? root.getHeight() : 610f;
+                                // Eagerly update for the first 1.5 screens to prevent black space, 
+                                // then update every 15 images to keep the scroll bounds growing without lagging
+                                if (contentHeight == 0 || (contentHeight + scrollY) < viewHeight * 1.5f || batchCells.size() % 15 == 0) {
+                                    if (this.children != null) this.children.clear();
+                                    for (CellComponent c : batchComps) this.add(c);
+                                    layout.setCells(batchCells);
+                                    repaint();
+                                }
                             });
                         }
                     } catch (IOException ignored) {}
@@ -167,9 +182,9 @@ public class FastGridView extends Component {
     }
 
     // FPS tracking
-    private long lastFpsTime = 0;
     private int frames = 0;
     private int currentFps = 0;
+    private javax.swing.Timer fpsTimer;
 
     @Override
     public void render(Graphics2D g) {
@@ -189,24 +204,15 @@ public class FastGridView extends Component {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         
-        long now = System.nanoTime();
         frames++;
-        if (now - lastFpsTime >= 1_000_000_000L) {
-            currentFps = frames;
-            frames = 0;
-            lastFpsTime = now;
-            if (onFpsUpdate != null) {
-                int fps = currentFps;
-                EventQueue.invokeLater(() -> onFpsUpdate.accept(fps));
-            }
-        }
 
         if (root != null) {
-            if (this.width != root.getWidth()) {
-                layout.invalidate();
-            }
+            boolean sizeChanged = this.width != root.getWidth() || this.height != root.getHeight();
             this.width  = root.getWidth();
             this.height = root.getHeight();
+            if (sizeChanged) {
+                layout.invalidate();
+            }
         }
 
         Rect[] rects = layout.getRects();
