@@ -1,4 +1,4 @@
-# FastGrid 0.1.0 [ALPHA] — Ultra-Fast Zero-Allocation Layout Engine
+# FastGrid 0.1.0 [ALPHA-2026-06] — Ultra-Fast Zero-Allocation Layout Engine
 
 [![Status](https://img.shields.io/badge/status-0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastGrid/releases/tag/0.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
