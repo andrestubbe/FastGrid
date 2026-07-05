@@ -1,16 +1,26 @@
 package fastgrid;
 
 public final class Rect {
-    public float x, y, w, h;
+    public float x;
+    public float y;
+    public float w;
+    public float h;
 
-    public Rect() {}
+    public Rect() {
+    }
 
     public Rect(float x, float y, float w, float h) {
-        this.x = x; this.y = y; this.w = w; this.h = h;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
     }
 
     public void set(float x, float y, float w, float h) {
-        this.x = x; this.y = y; this.w = w; this.h = h;
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
     }
 
     public void set(Rect other) {

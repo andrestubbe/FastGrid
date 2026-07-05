@@ -18,7 +18,7 @@ public class CellComponent extends Component {
     private final java.awt.geom.AffineTransform transform = new java.awt.geom.AffineTransform();
     private final java.awt.geom.Rectangle2D.Float fallbackRect = new java.awt.geom.Rectangle2D.Float();
     private final java.awt.geom.Rectangle2D.Float clipRect = new java.awt.geom.Rectangle2D.Float();
-    
+
     private final Proportion proportion = new Proportion(0, 0, 0, 0);
     private final float[] pOut = new float[4];
 
@@ -40,38 +40,42 @@ public class CellComponent extends Component {
 
         // If animation is running (proportionT < 1f), we must lerp
         if (view.proportionT < 1f) {
-             // Calculate current mode
-             proportion.x = 0f; proportion.y = 0f; proportion.width = outer.w; proportion.height = outer.h;
-             proportion.contentWidth = cell.aspect; proportion.contentHeight = 1f;
-             
-             proportion.compute(view.proportionMode, pOut);
-             float startOffsetX = pOut[0];
-             float startOffsetY = pOut[1];
-             float startW = pOut[2];
-             float startH = pOut[3];
+            // Calculate current mode
+            proportion.x = 0f;
+            proportion.y = 0f;
+            proportion.width = outer.w;
+            proportion.height = outer.h;
+            proportion.contentWidth = cell.aspect;
+            proportion.contentHeight = 1f;
 
-             // Calculate target mode
-             proportion.compute(view.targetProportionMode, pOut);
-             float targetOffsetX = pOut[0];
-             float targetOffsetY = pOut[1];
-             float targetW = pOut[2];
-             float targetH = pOut[3];
+            proportion.compute(view.proportionMode, pOut);
+            float startOffsetX = pOut[0];
+            float startOffsetY = pOut[1];
+            float startW = pOut[2];
+            float startH = pOut[3];
 
-             // Lerp
-             offsetX = startOffsetX + (targetOffsetX - startOffsetX) * view.proportionT;
-             offsetY = startOffsetY + (targetOffsetY - startOffsetY) * view.proportionT;
-             inner.w = startW + (targetW - startW) * view.proportionT;
-             inner.h = startH + (targetH - startH) * view.proportionT;
-             
-             // reset cache so it recomputes properly when done
-             lastMode = null; 
+            // Calculate target mode
+            proportion.compute(view.targetProportionMode, pOut);
+            float targetOffsetX = pOut[0];
+            float targetOffsetY = pOut[1];
+            float targetW = pOut[2];
+            float targetH = pOut[3];
+
+            // Lerp
+            offsetX = startOffsetX + (targetOffsetX - startOffsetX) * view.proportionT;
+            offsetY = startOffsetY + (targetOffsetY - startOffsetY) * view.proportionT;
+            inner.w = startW + (targetW - startW) * view.proportionT;
+            inner.h = startH + (targetH - startH) * view.proportionT;
+
+            // reset cache so it recomputes properly when done
+            lastMode = null;
         } else {
             // Proportion Math Caching: Only recompute if width, height or mode changed.
             if (outer.w != lastOuterW || outer.h != lastOuterH || view.targetProportionMode != lastMode) {
                 lastOuterW = outer.w;
                 lastOuterH = outer.h;
                 lastMode = view.targetProportionMode;
-                
+
                 // Calculate with a relative origin (0,0)
                 proportion.x = 0f;
                 proportion.y = 0f;

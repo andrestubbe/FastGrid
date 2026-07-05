@@ -1,7 +1,5 @@
 package fastgrid.demo;
 
-import fastgrid.*;
-
 import java.awt.event.*;
 
 public class InteractionController {

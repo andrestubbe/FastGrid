@@ -6,7 +6,6 @@ import fastgrid.GridLayout;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class LayoutController {
 
@@ -14,7 +13,7 @@ public class LayoutController {
 
     private List<Cell> cells = new ArrayList<>();
 
-    private final LayoutAlgorithm gridAlgo    = new GridLayout();
+    private final LayoutAlgorithm gridAlgo = new GridLayout();
     private final LayoutAlgorithm masonryAlgo = new MasonryLayout();
     private final LayoutAlgorithm galleryAlgo = new GalleryLayout();
 
@@ -36,9 +35,13 @@ public class LayoutController {
         this.initialized = false; // force reallocation
     }
 
-    public List<Cell> getCells() { return cells; }
+    public List<Cell> getCells() {
+        return cells;
+    }
 
-    public float getLayoutT() { return layoutT; }
+    public float getLayoutT() {
+        return layoutT;
+    }
 
     public void setLayoutT(float t) {
         this.layoutT = t;
@@ -74,7 +77,7 @@ public class LayoutController {
         }
 
         currentAlgo = switch (mode) {
-            case GRID    -> gridAlgo;
+            case GRID -> gridAlgo;
             case MASONRY -> masonryAlgo;
             case GALLERY -> galleryAlgo;
         };
@@ -91,10 +94,10 @@ public class LayoutController {
     }
 
     private LayoutContext createContext() {
-        float width   = panel.getWidth() > 0 ? panel.getWidth() : 700;
-        float gap     = Math.max(0f, panel.baseGap * panel.gapScale);
+        float width = panel.getWidth() > 0 ? panel.getWidth() : 700;
+        float gap = Math.max(0f, panel.baseGap * panel.gapScale);
         float minSize = 24f;
-        float cols    = panel.columns;
+        float cols = panel.columns;
         return LayoutContext.of(width, gap, minSize, cols);
     }
 
@@ -102,8 +105,8 @@ public class LayoutController {
         if (initialized || cells.isEmpty()) return;
 
         int n = cells.size();
-        sourceBounds  = allocRects(n);
-        targetBounds  = allocRects(n);
+        sourceBounds = allocRects(n);
+        targetBounds = allocRects(n);
         currentBounds = allocRects(n);
 
         compute(currentAlgo, targetBounds);
@@ -125,7 +128,7 @@ public class LayoutController {
 
     private void compute(LayoutAlgorithm algo, Rect[] out) {
         LayoutContext ctx = createContext();
-        LayoutMeasure m   = algo.measure(cells, ctx);
+        LayoutMeasure m = algo.measure(cells, ctx);
         algo.arrange(cells, ctx, m, out);
     }
 

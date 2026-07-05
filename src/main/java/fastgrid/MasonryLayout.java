@@ -9,7 +9,7 @@ public final class MasonryLayout implements LayoutAlgorithm {
     public LayoutMeasure measure(List<Cell> cells, LayoutContext ctx) {
         int cols = Math.max(1, Math.round(ctx.columns()));
         float gap = ctx.gap();
-        
+
         float usable = Math.max(1f, ctx.width() - gap * (cols + 1f));
         float colW = Math.max(ctx.minSize(), usable / cols);
 
@@ -32,7 +32,7 @@ public final class MasonryLayout implements LayoutAlgorithm {
     public void arrange(List<Cell> cells, LayoutContext ctx, LayoutMeasure m, Rect[] out) {
         int cols = Math.max(1, Math.round(ctx.columns()));
         float gap = ctx.gap();
-        
+
         float usable = Math.max(1f, ctx.width() - gap * (cols + 1f));
         float colW = Math.max(ctx.minSize(), usable / cols);
 

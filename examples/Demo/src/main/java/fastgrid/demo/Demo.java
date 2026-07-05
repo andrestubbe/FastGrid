@@ -1,9 +1,9 @@
 package fastgrid.demo;
 
-import fasttheme.FastTheme;
-import fastui.Container;
 import fastgrid.LayoutMode;
 import fastproportion.ProportionMode;
+import fasttheme.FastTheme;
+import fastui.Container;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,15 +13,15 @@ import java.io.File;
 
 public class Demo {
 
-    private static final int WIDTH  = 1173;
+    private static final int WIDTH = 1173;
     private static final int HEIGHT = 610;
 
     public static void main(String[] args) {
 
-        System.setProperty("sun.java2d.uiScale",         "1.0");
-        System.setProperty("sun.java2d.opengl",          "true");
+        System.setProperty("sun.java2d.uiScale", "1.0");
+        System.setProperty("sun.java2d.opengl", "true");
         System.setProperty("sun.java2d.opengl.fbobject", "true");
-        System.setProperty("sun.java2d.d3d",             "false");
+        System.setProperty("sun.java2d.d3d", "false");
 
         JFrame frame = new JFrame("FastGrid + FastUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -37,30 +37,30 @@ public class Demo {
 
         // Resolve image directory safely
         String userDir = System.getProperty("user.dir");
-        File imageDir = new File(userDir.contains("examples") ? 
-                                 "src/main/resources/images" : 
-                                 "examples/Demo/src/main/resources/images");
-                                 
+        File imageDir = new File(userDir.contains("examples") ?
+                "src/main/resources/images" :
+                "examples/Demo/src/main/resources/images");
+
         int[] stats = new int[]{0, 0, 0}; // loaded, total, fps
         Runnable updateTitle = () -> {
             frame.setTitle(String.format("FastGrid + FastUI [%d/%d] - %d FPS | Press 1, 2, 3, 4, 5, 6, 7 / use Alt+Wheel", stats[0], stats[1], stats[2]));
         };
-                                 
+
         view.onProgress = (loaded, total) -> {
             stats[0] = loaded;
             stats[1] = total;
             updateTitle.run();
         };
-        
+
         view.onFpsUpdate = (fps) -> {
             stats[2] = fps;
             updateTitle.run();
         };
-        
+
         view.loadImages(imageDir);
 
         // ── Keyboard shortcuts ──────────────────────────────────
-        InputMap  im = root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        InputMap im = root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = root.getActionMap();
 
         im.put(KeyStroke.getKeyStroke("1"), "grid-contain");
@@ -71,44 +71,50 @@ public class Demo {
         im.put(KeyStroke.getKeyStroke("6"), "gallery");
 
         am.put("grid-contain", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { 
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 view.setProportionMode(ProportionMode.CONTAIN);
-                view.anim.animateLayout(LayoutMode.GRID); 
+                view.anim.animateLayout(LayoutMode.GRID);
                 view.repaint();
             }
         });
         am.put("grid-cover", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { 
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 view.setProportionMode(ProportionMode.COVER);
-                view.anim.animateLayout(LayoutMode.GRID); 
+                view.anim.animateLayout(LayoutMode.GRID);
                 view.repaint();
             }
         });
         am.put("grid-fith", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { 
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 view.setProportionMode(ProportionMode.FIT_HORIZONTAL);
-                view.anim.animateLayout(LayoutMode.GRID); 
+                view.anim.animateLayout(LayoutMode.GRID);
                 view.repaint();
             }
         });
         am.put("grid-fitv", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { 
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 view.setProportionMode(ProportionMode.FIT_VERTICAL);
-                view.anim.animateLayout(LayoutMode.GRID); 
+                view.anim.animateLayout(LayoutMode.GRID);
                 view.repaint();
             }
         });
         am.put("masonry", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { 
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 view.setProportionMode(ProportionMode.FIT_HORIZONTAL); // Masonry inherently uses FIT_HORIZONTAL
-                view.anim.animateLayout(LayoutMode.MASONRY); 
+                view.anim.animateLayout(LayoutMode.MASONRY);
                 view.repaint();
             }
         });
         am.put("gallery", new AbstractAction() {
-            @Override public void actionPerformed(ActionEvent e) { 
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 view.setProportionMode(ProportionMode.FIT_VERTICAL); // Gallery inherently uses FIT_VERTICAL
-                view.anim.animateLayout(LayoutMode.GALLERY); 
+                view.anim.animateLayout(LayoutMode.GALLERY);
                 view.repaint();
             }
         });
