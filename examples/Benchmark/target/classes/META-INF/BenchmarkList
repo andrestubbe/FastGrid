@@ -1,3 +1,0 @@
-JMH S 27 fastgrid.benchmark.JMH_Grid S 70 fastgrid.benchmark.jmh_generated.JMH_Grid_computeGalleryLayout_jmhTest S 20 computeGalleryLayout S 11 AverageTime E A 1 1 1 E I 1 3 T 3 1 s E I 1 5 T 3 1 s E I 1 1 E E E E E E U 11 NANOSECONDS E E 
-JMH S 27 fastgrid.benchmark.JMH_Grid S 67 fastgrid.benchmark.jmh_generated.JMH_Grid_computeGridLayout_jmhTest S 17 computeGridLayout S 11 AverageTime E A 1 1 1 E I 1 3 T 3 1 s E I 1 5 T 3 1 s E I 1 1 E E E E E E U 11 NANOSECONDS E E 
-JMH S 27 fastgrid.benchmark.JMH_Grid S 70 fastgrid.benchmark.jmh_generated.JMH_Grid_computeMasonryLayout_jmhTest S 20 computeMasonryLayout S 11 AverageTime E A 1 1 1 E I 1 3 T 3 1 s E I 1 5 T 3 1 s E I 1 1 E E E E E E U 11 NANOSECONDS E E 
